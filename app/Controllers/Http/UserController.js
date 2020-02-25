@@ -3,11 +3,17 @@
 const User = use('App/Models/User')
 
 class UserController {
-  async index ({ request, response }) {
+  async index ({request, response}) {
     try {
-      let users = await User.all();
+      const reqData = request.all();
+      const limit = reqData.limit || 20;
+      const page = reqData.page || 1;
 
-      return response.json(users)
+      let builder = User.query();
+      const users = await builder
+        .orderBy('id', 'desc')
+        .paginate(page, limit);
+      return response.status(200).json({users});
     } catch (e) {
       return response
         .status(e.status)

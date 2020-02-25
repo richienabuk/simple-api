@@ -4,11 +4,16 @@ const Article = use('App/Models/Article');
 
 class ArticleController {
   async index({request, response}) {
-
     try {
-      let articles = await Article.query().with('user').fetch();
+      const reqData = request.all();
+      const limit = reqData.limit || 20;
+      const page = reqData.page || 1;
 
-      return response.json(articles)
+      let builder = Article.query().with('user');
+      const articles = await builder
+        .orderBy('id', 'desc')
+        .paginate(page, limit);
+      return response.status(200).json({articles});
     } catch (e) {
       return response
         .status(e.status)
