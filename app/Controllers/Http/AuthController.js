@@ -18,30 +18,24 @@ class AuthController {
           .send({ message: { error: 'User already registered' } })
       }
 
-      // if user doesn't exist, proceeds with saving him in DB
-      return await User.create(data)
+      // if user doesn't exist, proceeds with saving details in DB
+      let user = await User.create(data);
+      //generate token for user;
+      let token = await auth.generate(user);
+      Object.assign(user, token);
+      return response.json(user)
     } catch (e) {
       return response
         .status(e.status)
         .send(e)
     }
-
-
-    let user = await User.create(request.all());
-
-    //generate token for user;
-    let token = await auth.generate(user);
-
-    Object.assign(user, token);
-
-    return response.json(user)
   }
 
-  show ({ auth, params }) {
-    if (auth.user.id !== Number(params.id)) {
-      return 'You cannot see someone else\'s profile'
-    }
-    return auth.user
+  show ({ auth, params, response }) {
+    /*if (auth.user.id !== Number(params.id)) {
+      return response.json({ message: 'You cannot see someone else\'s profile' })
+    }*/
+    return response.json(auth.user)
   }
 
   async login({request, auth, response}) {
