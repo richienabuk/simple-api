@@ -56,4 +56,4 @@ class ArticleController {
   }
 }
 
-module.exports = ArticleController
+module.exports = ArticleController;
